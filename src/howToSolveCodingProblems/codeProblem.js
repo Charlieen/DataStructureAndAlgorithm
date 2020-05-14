@@ -13,7 +13,8 @@
     return arr1.some(item => arr2.includes(item));
 }
 /**
- * O(n)
+ * O(n) time complexity
+ * O(a) space complexity
  */
 function isContain2(arr1,arr2){
   // array to object;
