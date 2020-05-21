@@ -16,6 +16,7 @@ class BinaryTree{
     }
 
     _appendHelp(point,item){
+        debugger;
         if(point.value ==null && point.left ==null && point.right ==null){
             point.value = item;
         }else{

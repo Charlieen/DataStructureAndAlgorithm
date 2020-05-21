@@ -29,15 +29,17 @@ class BinaryTree{
 
     
     _isLostBalance(curr){
-      
+    //  debugger;
         if(curr.parent!==null && curr.grand !==null) {
 
             if(curr.grand.right ==null){
                 if(curr.parent.right ==null){
                     curr.grand.lostBalance ='ll';
+                    return curr.grand;
                 }
                 if(curr.parent.left ==null){
                     curr.grand.lostBalance ='lr';
+                    return curr.grand;
                 }
             }
           
@@ -45,9 +47,11 @@ class BinaryTree{
             if(curr.grand.left ==null){
                 if(curr.parent.left ==null){
                     curr.grand.lostBalance='rr';
+                    return curr.grand;
                 }
                 if(curr.parent.right ==null){
                     curr.grand.lostBalance='rl';
+                    return curr.grand;
                 }
             }
 
@@ -56,11 +60,20 @@ class BinaryTree{
                     const nodeLeft = curr.grand.parent.left;
                     if(nodeLeft.left ==null && nodeLeft.right ==null){
                         curr.grand.lostBalance='rr';
+                        return curr.grand;
                     }
                 }
             }
             
-            
+            if(curr.grand.parent!=null){
+                if(curr.grand.right !=null){
+                    const nodeRight= curr.grand.parent.right;
+                    if(nodeRight.left ==null && nodeRight.right ==null){
+                        curr.grand.lostBalance='ll';
+                        return curr.grand;
+                    }
+                }
+            }
 
             curr = curr.grand;
         }
@@ -68,42 +81,92 @@ class BinaryTree{
         return curr;
     }
 
-    _llRotate_b(node){
+    _llRotate(node){
+        const node_L =node.left;
+        const node_L_L = node.left.left;
+    if(node.right==null){
         if(node.parent ==null){
+            this.root = node_L;
+            node_L.right = node;
+            node_L.parent =null;
 
-            this.root = node.left;
-            this.root.parent=null;
+            node.left =null;
+            node.parent = node_L;
 
-            node.left.right = node;
-            node.parent =this.root;
-            node.left=null;
-
+            node_L_L.grand = node_L.parent;
         }else{
-          
-
-            
-            const node_Left = node.left;
-            const node_Left_Left = node.left.left;
+            // pointer links
+            if(node.parent.left == node){
+                node.parent.left = node_L;
+            }else if(node.parent.right == node){
+                node.parent.right = node_L;
+            }
         
 
-            // 1: point relations:
-            node.parent.left = node_Left;
-            node_Left.right = node;
-            // 2: update parent and grand and left and right
-  
+            node_L.right = node;
 
-            node_Left.parent = node.parent;
-            node_Left.grand = node.parent.parent;
+            //
+            node_L.parent = node.parent;
+            node_L.grand = node_L.parent.parent;
 
-            node_Left_Left.parent = node_Left;
-            node_Left_Left.grand = node_Left.parent;
+            node.left = null;
+            node.parent = node_L;
+            node.grand = node.parent.parent;
 
-            node.left=null;
-            node.parent = node_Left;
-            node.grand = node_Left.parent;
-
-
+            node_L_L.grand = node_L_L.parent.parent;
         }
+    }else{
+        
+        if(node.parent.left == node){
+        
+        const node_R= node.right;
+        const node_P= node.parent;
+        const node_P_R= node.parent.right;
+
+        // pointer links
+        if(node.parent !=null){
+            node.parent.left = node;
+        }else{
+            this.root = node;
+        }
+       
+    
+        node.right = node_P;
+        node_P.left = node_R;
+        // l r p g 
+
+        node.right = node_P;
+        node.parent =null;
+
+        node_L.grand = node_L.parent.parent;
+        node_P.left = node_R;
+        node_P.parent = node;
+        node_R.parent = node_P;
+        node_R.grand = node_R.parent.parent;
+
+        node_P_R.grand = node_P_R.parent.parent;
+
+        }else if( node.parent.right == node){
+
+        const node_P= node.parent;
+        const node_P_L =node.parent.left;
+        const node_right = node.right;
+        
+        // 1: pointer links
+
+        node_L.right = node;
+        node_L.left = node_P;
+        node_P.right = node_L_L;
+
+        // 2: l r p pp;
+        // ...
+
+        
+        }
+
+        
+
+    }
        
 
     }
@@ -210,14 +273,26 @@ class BinaryTree{
         }
    
     }
+
     _lrRotate(node){
-        //
+    
+       // debugger;
+
         const node_Left = node.left;
         const node_Left_Right =node.left.right;
 
+        // point link;
         node.left= node_Left_Right;
         node_Left_Right.left =node_Left;
         node_Left.right =null;
+
+        // p pp;
+
+        node_Left_Right.parent = node;
+        node_Left_Right.grand = node_Left_Right.parent.parent;
+
+        node_Left.parent = node_Left_Right;
+        node_Left.grand =  node_Left.parent.parent;
 
         //
         this._llRotate(node);
@@ -227,10 +302,17 @@ class BinaryTree{
         const node_Right = node.right;
         const node_Right_Left =node.right.left;
 
+        // point link;
         node.right= node_Right_Left;
         node_Right_Left.right =node_Right;
         node_Right.left =null;
 
+        // p pp ;
+        node_Right_Left.parent = node;
+        node_Right_Left.grand = node_Right_Left.parent.parent;
+
+        node_Right.parent = node_Right_Left;
+        node_Right.grand =  node_Right.parent.parent;
         //
         this._rrRotate(node);
 
@@ -238,6 +320,8 @@ class BinaryTree{
     }
 
     _appendHelp(point,item){
+        // debugger;
+
         if(point.value ==null && point.left ==null && point.right ==null){
             point.value = item;
             point.parent= null;
@@ -274,6 +358,9 @@ class BinaryTree{
 
     append(item){
       const node = this._appendHelp(this.root,item);
+        console.log(node);
+    //  debugger;
+      //console.log(this.toString());
 
       if(node.lostBalance !== null){
 
@@ -379,7 +466,7 @@ class BinaryTree{
     }
 
     toString() {
-
+ //debugger;
       const result =[];
       let layerItems =[];
       layerItems.push(this.root);
@@ -393,24 +480,24 @@ class BinaryTree{
             const point = layerItems[i];
 
             if(point.left ==null && point.right ==null){
-                const temp ={left:null,value:point.value,right:null};
+                const temp ={left:null,value:point.value,right:null,p:null,pp:null};
                 result.push(temp);
     
             }else{
                 if(point.left !== null && point.right !== null){
-                    const temp ={left:point.left.value,value:point.value,right:point.right.value};
+                    const temp ={left:point.left.value,value:point.value,right:point.right.value,p:point.parent,pp:point.grand};
                     result.push(temp);
                     newLayer.push(point.left);
                     newLayer.push(point.right);
     
                 }else{
                     if(point.left !== null && point.right == null){
-                        const temp ={left:point.left.value,value:point.value,right:null};
+                        const temp ={left:point.left.value,value:point.value,right:null,p:point.parent,pp:point.grand};
                         result.push(temp); 
                         newLayer.push(point.left);
                     }
                     if(point.left == null && point.right !== null){
-                        const temp ={left:null,value:point.value,right:point.right.value};
+                        const temp ={left:null,value:point.value,right:point.right.value,p:point.parent,pp:point.grand };
                         result.push(temp); 
                         newLayer.push(point.right);
                     }
@@ -448,5 +535,23 @@ const tree = new BinaryTree();
 
 //tree.append(2).append(4).append(20);
 //tree.append(10).append(4).append(15).append(2).append(18).append(20);
-tree.append(4).append(2).append(10).append(5).append(18).append(20);
+//tree.append(4).append(2).append(10).append(5).append(18).append(20);
+//tree.append(10).append(9).append(8);
+//tree.append(4).append(15).append(57).append(40).append(54).append(71).append(97);
+//.append(48).append(38).append(98).append(93)
+tree.
+append(3).
+append(65).
+append(98).
+append(96).
+append(80)
+// append(37).
+// append(44).
+// append(40).
+// append(31).
+// append(28).
+// append(36)
+;
+//.append(56).append(48).append(38);
+//.append(98);
 console.log(tree.toString());
