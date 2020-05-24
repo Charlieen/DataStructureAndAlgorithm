@@ -174,12 +174,240 @@ function mergeSort(arr){
 
 }
 
+// quick sort code...
+
+class Arr {
+    constructor(arr){
+        this.data =arr;
+        this.left =0;
+        this.right =arr.length-1;
+    }
+    setBorder(left,right){
+        this.left =left;
+        this.right =right;
+    }
+}
+
+
+function _getPivot(arr){
+
+    const pivot ={index:0, value:0};
+        pivot.index = arr.right;
+        pivot.value=arr.data[pivot.index];
+
+    return pivot;
+}
+
+function _pivotNext(pivot,arr){
+    const _pNext ={index:0, value:0,to:''};
+    if(pivot.index == arr.left ){
+        _pNext.to='r';
+        _pNext.index= arr.right;
+        _pNext.value= arr.data[_pNext.index];
+
+    }else if(pivot.index == arr.right){
+
+        _pNext.to='l';
+        _pNext.index= arr.left;
+        _pNext.value = arr.data[_pNext.index];
+
+    }else if(pivot.index < arr.right){
+         _pNext.to='m';
+         _pNext.index= pivot.index+1;
+         _pNext.value= arr.data[_pNext.index];
+    }
+    return _pNext;
+}
+
+function _change(pivot,next,arr){
+
+   // debugger;
+    if(next.to == 'r'){
+        if(next.value >= pivot.value){
+
+            next.index = next.index -1;
+
+            if(next.index < arr.left){
+                next.value = -1;
+            }else{
+                next.value = arr.data[next.index];
+            }
+            
+
+            return _change(pivot,next,arr);
+        }
+    }else if(next.to == 'l'){
+        
+        if(next.value <= pivot.value){
+
+            next.index= next.index+1;
+            if(next.index >= arr.right){
+                return arr;
+            }else{
+                next.value = arr.data[next.index];
+            }
+
+            return _change(pivot,next,arr);
+        }
+
+    }else if(next.to == 'm'){
+
+        if(next.value >= pivot.value){
+              
+            if( next.index < arr.right){
+                next.index = next.index +1;
+                if(next.index<= arr.right){
+                    next.value = arr[next.index];
+                }else{
+                    next.index = pivot.index-1;
+                    if(next.index>= left){
+                        next.value = arr[next.index];
+                    }else {
+                        next.value= -1;
+                    }
+                }
+            }
+
+            return _change(pivot,next,arr);
+        }
+    }
+
+    if(Math.abs(pivot.index - next.index) ==1 ){
+
+        
+        const temp = next.value;
+        arr.data[next.index]=pivot.value;
+        arr.data[pivot.index]= temp;
+
+        if(next.to === 'r'){
+            pivot.index= pivot.index+1; 
+            pivot.value= arr[pivot.index];
+            if(pivot.index+1 <= arr.right){
+                next.index = next.index+1;
+                next.value = arr.data[next.index];
+            }else{
+                next.index = -1; // stop 
+            }
+        }else if (next.to ==='l'){
+
+            pivot.index= pivot.index-1; 
+            pivot.value = arr.data[pivot.index];
+
+            if(pivot.index-1 >= arr.left){
+                next.index = next.index-1;
+                next.value = arr.data[next.index];
+            }else{
+                next.index = -1; // stop 
+            }
+
+        }
+    } else {
+
+   
+        if(next.to === 'r' || next.to ==='m'){
+
+            const temp = arr.data[pivot.index+1];
+            arr.data[pivot.index+1] = pivot.value;
+            arr.data[pivot.index]= next.value;
+            arr.data[next.index]= temp;
+    
+            pivot.index= pivot.index+1;
+            pivot.value =arr.data[pivot.index];
+
+            if(pivot.index+1 <= arr.right){
+              //  next.index = next.index+1;
+                next.value = arr.data[next.index];
+            }else{
+                next.index = -1;
+            }
+
+
+        }else if (next.to ==='l'){
+            
+            const temp = arr.data[pivot.index-1];
+            arr.data[pivot.index-1] = pivot.value;
+            arr.data[pivot.index]= next.value;
+            arr.data[next.index]= temp;
+
+            pivot.index= pivot.index- 1;
+            pivot.value =arr.data[pivot.index];
+
+            if(pivot.index-1 >= arr.left){
+               // next.index = next.index+1;
+                next.value = arr.data[next.index];
+            }else{
+                next.index = -1;
+            }
+        }
+    }
+
+    if(next.to == 'r'|| next.to =='l'){
+        if(Math.abs(pivot.index- next.index)==1){
+            return {pivot:pivot,arr:arr};
+        }
+    }else if (next.to== 'm'){
+        if(next.index ==0){
+            return {pivot:pivot,arr:arr};
+        }
+    }
+    if(next.index == -1){
+        return {pivot:pivot,arr:arr};
+    }
+
+    return _change(pivot,next,arr);
+}
+
+
+
+ function _isFinish(pivot,arr){
+    let result =false;
+
+    if(Math.abs(arr.right- arr.left)<=3){
+        if(arr.data[arr.left] == arr.data[arr.right]){
+            result =true;
+        }else if(Math.abs(arr.right-arr.left) ==1 && arr.data[arr.left] < arr.data[arr.right]){
+            result =true;
+        }else if(arr.data[arr.left]<pivot.value && pivot.value< arr.data[arr.right]){
+            result = true;
+        }
+    }   
+     return result;
+
+}
+
+function quickSort(arr){
+    debugger;
+    const pivot = this._getPivot(arr);
+    const next = this._pivotNext(pivot,arr);
+    
+    if(this._isFinish(pivot,arr)) return arr.data;
+
+    const r = this._change(pivot,next,arr);
+    if(this._isFinish(r.pivot,r.arr)) return arr.data;
+    
+    const arrLeft =  new Arr(r.arr.data);
+    arrLeft.left = r.arr.left;
+    arrLeft.right = r.pivot.index-1;
+
+    const arrRight =  new Arr(r.arr.data);
+    arrRight.left =  r.pivot.index+1;
+    arrRight.right = r.arr.right;
+    
+    quickSort(arrLeft);
+    quickSort(arrRight);
+ 
+}
 
 
 
 // const arr =[1,8,3,2,0];
- const arr =[1,8,3,2,7,4,5,8,11,19,20,51,61,55,71,65];
+// const arr =[1,8,3,2,7,4,5,8,11,19,20,51,61,55,71,65];
+ const arr= [3,7,8,5,2,1,9,5,4];
+// const arr= [5,8,9,5,7];
+// const arr= [3,1,2];
 
+// const arr=[5,5];
+//const arr=[9,5];
  
 //const arr =[1,8,3,2,7,4,6,5];
 // console.log(bubbleSort(arr));
@@ -193,5 +421,9 @@ function mergeSort(arr){
 
 //console.log(_mergeRec(arr1,arr2,[]));
 
-console.log(mergeSort(arr));
-console.log(arr);
+//console.log(mergeSort(arr));
+//console.log(arr);
+
+let a = new Arr(arr);
+quickSort(a);
+console.log(a);
