@@ -9,6 +9,11 @@ function addTo80(a){
  * 
  * use cache and avoid use global variable , we can use javascript basic  mechanism closure.
  * 
+ * 1:Can be divided into subproblem;
+ * 2: Recursive Solutions
+ * 3: Are there repetitive subproblems ?
+ * 4: Memoize subproblems
+ * 5: Demand a raise from your boss .
  */
 
 function memoizedAddTo80(){
@@ -93,3 +98,13 @@ for(let i=0;i<200;i++){
 console.log(fib2(200));
 const b2 = performance.now();
 console.log('with cache:',b2-b1);
+
+// 
+
+function climb(n){
+    if(n<=2) return 2;
+    else return climb(n-1)+1;
+
+}
+
+console.log(climb(7));
